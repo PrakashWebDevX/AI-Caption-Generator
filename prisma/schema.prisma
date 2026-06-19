@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Account {
@@ -58,27 +57,27 @@ model VerificationToken {
 }
 
 model Generation {
-  id         String   @id @default(cuid())
-  userId     String
-  imageUrl   String
-  instagram  String
-  youtube    String
-  linkedin   String
-  hashtags   String
-  tone       String
-  createdAt  DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  userId    String
+  imageUrl  String
+  instagram String
+  youtube   String
+  linkedin  String
+  hashtags  String
+  tone      String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Payment {
-  id             String   @id @default(cuid())
-  userId         String
-  razorpayOrderId String  @unique
+  id                String   @id @default(cuid())
+  userId            String
+  razorpayOrderId   String   @unique
   razorpayPaymentId String?
-  amount         Int
-  currency       String   @default("INR")
-  plan           String
-  status         String   @default("pending")
-  createdAt      DateTime @default(now())
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount            Int
+  currency          String   @default("INR")
+  plan              String
+  status            String   @default("pending")
+  createdAt         DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

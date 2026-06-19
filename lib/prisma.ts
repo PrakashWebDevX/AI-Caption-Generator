@@ -1,21 +1,18 @@
-// Prisma client - generated at runtime after `npx prisma generate`
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-let prismaInstance: any;
+import { PrismaClient } from "@prisma/client";
+import { PrismaNeon } from "@prisma/adapter-neon";
+import { neonConfig, Pool } from "@neondatabase/serverless";
+import ws from "ws";
 
-function getPrisma() {
-  if (!prismaInstance) {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { PrismaClient } = require("@prisma/client");
-      prismaInstance = new PrismaClient();
-    } catch {
-      // During build without generated client, return a proxy
-      prismaInstance = new Proxy({}, {
-        get: () => () => Promise.reject(new Error("Prisma client not generated. Run: npx prisma generate")),
-      });
-    }
-  }
-  return prismaInstance;
+neonConfig.webSocketConstructor = ws;
+
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
+
+function createPrisma() {
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const adapter = new PrismaNeon(pool);
+  return new PrismaClient({ adapter } as any);
 }
 
-export const prisma = typeof window === "undefined" ? getPrisma() : null;
+export const prisma = globalForPrisma.prisma || createPrisma();
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
